@@ -13,6 +13,7 @@ def baseline(train, test):
 
     output = []
     word_map = {}
+    tag_map = {}
 
     for sentence in train:
         for word, tag in sentence:
@@ -22,13 +23,25 @@ def baseline(train, test):
                 word_map[word][tag] = 1
             else:
                 word_map[word][tag] += 1
+            if tag not in tag_map:
+                tag_map[tag] = 1
+            else:
+                tag_map[tag] += 1
+
+    maxTag = None
+    maxCount = 0
+    for tag, count in tag_map.items():
+        if count > maxCount:
+            maxTag = tag
+            maxCount = count
+
 
     for sentence in test:
         temp = []
         for word in sentence:
             if word in word_map:
-                temp.append((word, max(word_map[word], key=lambda x: word_map[word][x])))
+                temp.append((word, max(word_map[word].keys(), key=lambda x: word_map[word][x])))
             else:
-                temp.append((word, 'NOUN'))
+                temp.append((word, maxTag))
         output.append(temp)
     return output
